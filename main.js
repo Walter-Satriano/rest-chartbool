@@ -13,7 +13,8 @@ $(document).ready(function() {
 
       success: function(data) {
 
-        print(data);
+        printLineGraph(data);
+        printPieGraph(data);
         console.log("data", data);
       },
 
@@ -57,26 +58,77 @@ $(document).ready(function() {
   }
 
 
-  //funzione per stampare
-  function print(data) {
-    var ctx = document.getElementById("line_graph").getContext("2d");
+  //funzione per stampare il grafico a linea
+  function printLineGraph(data) {
+    var ctxLine = document.getElementById("line_graph").getContext("2d");
 
     var monthsLabel = getItaMonths();
     var monthsAmount = salesSum(data);
 
-    var lineGraph = new Chart(ctx, {
+    var lineGraph = new Chart(ctxLine, {
       type: "line",
       data: {
         labels: monthsLabel,
         datasets: [{
           label: "# Fatturato Mensile",
-          data: monthsAmount
+          data: monthsAmount,
+           borderColor: [
+             "rgb(170, 0, 255)"
+           ]
         }]
       },
 
     });
   }
 
+  //funzione per stampare il grafico a torta
+  function printPieGraph(data) {
+    var ctxPie = document.getElementById("pie_graph").getContext("2d");
+
+    var sellers = getSellers(data);
+    var nameSalesMan = Object.keys(sellers);
+    var amountSalesMan = Object.values(sellers);
+
+
+    var pieGraph = new Chart(ctxPie, {
+      type: "pie",
+      data: {
+        labels: nameSalesMan,
+        datasets: [{
+          label: "# of Votes",
+          data: amountSalesMan,
+          backgroundColor: [
+            "rgb(255, 0, 0)",
+            "rgb(255, 255, 0)",
+            "rgb(0, 255, 0)",
+            "rgb(0, 0, 255)"
+          ]
+        }]
+      },
+
+    });
+  }
+
+  function getSellers(data) {
+
+    var sellers = {};
+
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+
+
+      var salesMan = item.salesman;
+      if (!sellers[salesMan]) {
+        sellers[salesMan] = 0;
+      }
+
+      var amount = item.amount;
+      sellers[salesMan] += amount;
+    }
+    console.log("sono nella funzione getSellers ", sellers);
+
+    return sellers;
+  }
 
 
 
