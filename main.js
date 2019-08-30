@@ -4,6 +4,8 @@ $(document).ready(function() {
 
   getData();
 
+
+
   //funzione per recuperare i dati dalla url
   function getData() {
 
@@ -15,6 +17,8 @@ $(document).ready(function() {
 
         printLineGraph(data);
         printPieGraph(data);
+        printSellersOption(data);
+        printMonthsOption(data);
         console.log("data", data);
       },
 
@@ -32,7 +36,7 @@ $(document).ready(function() {
     moment.locale("it");
 
     var months = moment.months();
-    console.log("months", months);
+    console.log("funzione getItaMonths", months);
 
     return months;
   }
@@ -48,7 +52,7 @@ $(document).ready(function() {
       var d = data[i];
 
       var monthNum = moment(d.date, "DD-MM-YYYY").month();
-      var amount = d.amount;
+      var amount = Number(d.amount);
 
       months[monthNum] += amount;
     }
@@ -60,11 +64,11 @@ $(document).ready(function() {
 
   //funzione per stampare il grafico a linea
   function printLineGraph(data) {
-    var ctxLine = document.getElementById("line_graph").getContext("2d");
 
     var monthsLabel = getItaMonths();
     var monthsAmount = salesSum(data);
 
+    var ctxLine = document.getElementById("line_graph").getContext("2d");
     var lineGraph = new Chart(ctxLine, {
       type: "line",
       data: {
@@ -83,13 +87,23 @@ $(document).ready(function() {
 
   //funzione per stampare il grafico a torta
   function printPieGraph(data) {
-    var ctxPie = document.getElementById("pie_graph").getContext("2d");
 
     var sellers = getSellers(data);
-    var nameSalesMan = Object.keys(sellers);
-    var amountSalesMan = Object.values(sellers);
 
+    var nameSalesMan = Object.keys(sellers); //ritorna un array di tutte le chiavi
+    console.log("nameSalesMan", nameSalesMan);
+    var amountSalesMan = Object.values(sellers); //ritorna un array di tutti i valori
+    console.log("amountSalesMan", amountSalesMan);
 
+    //sommo gli elementi presenti nell'array amountSalesMan
+    var reducer = (accumulator, currentValue) => accumulator + currentValue;
+    var totalAmount = amountSalesMan.reduce(reducer);
+    //ottengo la percentuale
+    for (var i = 0; i < amountSalesMan.length; i++) {
+      amountSalesMan[i] = ((amountSalesMan[i] / totalAmount) * 100).toFixed(1);
+    }
+
+    var ctxPie = document.getElementById("pie_graph").getContext("2d");
     var pieGraph = new Chart(ctxPie, {
       type: "pie",
       data: {
@@ -109,6 +123,8 @@ $(document).ready(function() {
     });
   }
 
+
+  //funzione per ottenere e confrontare le chiavi e valori ottenuti dalla chiamatas
   function getSellers(data) {
 
     var sellers = {};
@@ -123,13 +139,97 @@ $(document).ready(function() {
       }
 
       var amount = item.amount;
-      sellers[salesMan] += amount;
+      sellers[salesMan] += Number(amount);
+
     }
     console.log("sono nella funzione getSellers ", sellers);
 
     return sellers;
   }
 
+
+  // funzione per inserire i nomi dei venditori nella select
+  function printSellersOption(data) {
+
+    var sellers = getSellers(data);
+    var nameSalesMan = Object.keys(sellers);
+
+    var source = $("#select_name").html();
+    var template = Handlebars.compile(source);
+
+    for (var i = 0; i < nameSalesMan.length; i++) {
+
+      var sellersName = nameSalesMan[i];
+
+      var context = {
+        sellers_name: sellersName,
+      };
+
+      var html = template(context);
+
+      $(".sellers_list").append(html);
+    }
+  }
+
+
+  // funzione per inserire i nomi dei mesi nella select
+  function printMonthsOption(data) {
+
+    var months = getItaMonths();
+
+    var source = $("#select_month").html();
+    var template = Handlebars.compile(source);
+
+    for (var i = 0; i < months.length; i++) {
+      var month = months[i]
+      console.log("month", month);
+
+      var context = {
+        months: month,
+      };
+
+      var html = template(context);
+
+      $(".months_list").append(html);
+    }
+  }
+
+
+  /* DA RIVEDERE E COMPLETARE */
+
+  $("#add_amount").click(addAmount);
+
+  //funzione per aggiungere le vendite
+  function addAmount() {
+    //salvo l'input utente in una variabile
+    var amountInput = $(".amount_input").val();
+    console.log(amountInput);
+    //svuoto l'input
+    $(".amount_input").val("");
+
+    postData();
+
+  }
+
+  // funzione per mandare i dati alla url
+  function postData() {
+
+    $.ajax({
+      url: "http://157.230.17.132:4011/sales",
+      method: "POST",
+
+      success: function(data) {
+
+
+        console.log("POSTdata", data);
+      },
+
+      error: function() {
+        alert("errore");
+      }
+
+    });
+  }
 
 
 
