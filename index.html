@@ -16,7 +16,12 @@
     <!-- JS: HANDLEBARS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js" charset="utf-8"></script>
     <!-- TEMPLATE: MESSAGE MENU -->
-    <script id="item-template" type="text/x-handlebars-template">
+    <script id="select_name" type="text/x-handlebars-template">
+      <option value="{{sellers_name}}">{{sellers_name}}</option>
+    </script>
+
+    <script id="select_month" type="text/x-handlebars-template">
+      <option value="{{months}}">{{months}}</option>
     </script>
 
     <!-- JS: CHART JS -->
@@ -32,10 +37,25 @@
   <body>
 
     <div class="container">
+
+      <div class="selection_bar">
+
+        <select class="sellers_list" name="Sellers" >
+          <!-- lista agenti -->
+        </select>
+
+        <select class="months_list" name="Months">
+          <!-- lista mesi -->
+        </select>
+
+        <input class="amount_input" type="number" name="" value="" placeholder="inserisci l'ammontare della vendita">
+        <button id="add_amount" type="button" name="button">AGGIUNGI</button>
+      </div>
+
+
+
       <canvas id="line_graph"></canvas>
       <canvas id="pie_graph"></canvas>
-
-
     </div>
 
   </body>
