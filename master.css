@@ -11,9 +11,8 @@
 
 .container {
 
-  width: 100vw;
+  width: 60vw;
   height: 100vh;
-
   padding: 50px 25px;
 
   /* overflow: hidden; */
@@ -21,4 +20,22 @@
 
 #line_graph {
   margin-bottom: 80px;
+}
+
+.selection_bar {
+  margin-bottom: 80px;
+}
+
+.selection_bar select {
+  width: 120px;
+  margin-right: 10px;
+}
+
+.selection_bar input {
+  width: 250px;
+  margin-right: 10px;
+}
+
+.selection_bar button {
+  width: 100px;
 }
