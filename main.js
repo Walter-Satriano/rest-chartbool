@@ -182,7 +182,6 @@ $(document).ready(function() {
 
     for (var i = 0; i < months.length; i++) {
       var month = months[i]
-      console.log("month", month);
 
       var context = {
         months: month,
@@ -199,26 +198,35 @@ $(document).ready(function() {
 
   $("#add_amount").click(addAmount);
 
-  //funzione per aggiungere le vendite
-  function addAmount() {
-    //salvo l'input utente in una variabile
-    var amountInput = $(".amount_input").val();
-    console.log(amountInput);
-    //svuoto l'input
-    $(".amount_input").val("");
-
-    postData();
-
-  }
 
   // funzione per mandare i dati alla url
-  function postData() {
+  function addAmount() {
+
+    //salvo il venditore selezionato in una variabile
+    var addSeller = $(".sellers_list option:selected").val();
+    console.log("agente selezionato", addSeller);
+
+    //salvo il mese selezionato in una variabile
+    var addMonth = $(".months_list option:selected").val();
+    console.log("mese selezionato", addMonth);
+
+    //salvo l'amountInput in una variabile
+    var amountInput = Number($(".amount_input").val());
+    console.log("importo inserito", amountInput);
+
 
     $.ajax({
       url: "http://157.230.17.132:4011/sales",
       method: "POST",
-
+      data: {
+        salesman : addSeller,
+        amount : amountInput,
+        //NON FUNZIONA POICHE' IL FORMATO DELLA DATA NON E' UGUALE A QUELLO RITORNATO DALL'URL
+        date : "01/" + addMonth + "/2017"
+      },
       success: function(data) {
+        //svuoto l'input
+        $(".amount_input").val("");
 
 
         console.log("POSTdata", data);
